@@ -52,6 +52,17 @@ internal sealed class GaugeSession : IUiSession, IDisposable, IAsyncDisposable
 			_timer = new Timer(OnTick, null, TimeSpan.Zero, RefreshPeriod);
 	}
 
+	private static readonly WindsurfGaugesData SampleConfig = new()
+	{
+		Title = "Windsurf",
+		Style = WindsurfGaugesData.StyleArc,
+		Gauges =
+		[
+			new WindsurfGaugeConfig { Id = "daily", Variable = "windsurf_daily_used", Name = "Daily", Max = 100, ValueSuffix = "%" },
+			new WindsurfGaugeConfig { Id = "weekly", Variable = "windsurf_weekly_used", Name = "Weekly", Max = 100, ValueSuffix = "%" }
+		]
+	};
+
 	public static async Task<GaugeSession> CreateAsync(
 		UiSurface surface,
 		WindsurfGaugesData config,
@@ -62,6 +73,10 @@ internal sealed class GaugeSession : IUiSession, IDisposable, IAsyncDisposable
 		bool live,
 		CancellationToken cancellationToken)
 	{
+		// The picker card asks for a representative sample: when the stored data holds no gauges
+		// (or carries none at all), render the sample pair instead of the empty hint.
+		if (live == false && config.Shown.Count == 0)
+			config = SampleConfig;
 		var faces = config.Shown.Select(_ => new UiState<GaugeFace>(
 			new GaugeFace { Color = null, Name = "" })).ToList();
 

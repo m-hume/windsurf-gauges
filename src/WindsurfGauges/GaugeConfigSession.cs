@@ -228,8 +228,8 @@ internal sealed class GaugeConfigSession : IUiSession
 		["variable"] = variable,
 		["name"] = name,
 		["max"] = 100.0,
-		["valueSize"] = 0.24,
-		["labelSize"] = 0.13,
+		["valueSize"] = 0.14,
+		["labelSize"] = 0.16,
 		["valueSuffix"] = suffix
 	};
 
@@ -498,7 +498,7 @@ internal sealed class GaugeConfigSession : IUiSession
 		Bind.Custom(
 			() => Find(gauges.Value, id)?[field] is JsonValue value &&
 				value.TryGetValue<double>(out var fraction)
-					? fraction * 100
+					? Math.Round(fraction * 100, 1)
 					: defaultFraction * 100,
 			value => Mutate(gauges, id, gauge =>
 			{

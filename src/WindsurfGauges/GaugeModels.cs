@@ -106,8 +106,8 @@ public sealed record WindsurfGaugesData
 	public const int MaxGauges = 8;
 	public const string StyleRing = "ring";
 	public const string StyleArc = "arc";
-	public const double DefaultValueSize = 0.24;
-	public const double DefaultLabelSize = 0.13;
+	public const double DefaultValueSize = 0.14;
+	public const double DefaultLabelSize = 0.16;
 
 	public string? Title { get; init; }
 	public string Style { get; init; } = StyleRing;

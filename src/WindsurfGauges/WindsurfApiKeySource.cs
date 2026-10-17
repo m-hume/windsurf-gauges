@@ -2,10 +2,10 @@ using Serilog;
 
 namespace WindsurfGauges;
 
-/// <summary>Where the poller gets its Windsurf API key from.</summary>
+/// <summary>Where the poller gets its Windsurf API keys from.</summary>
 public interface IWindsurfApiKeySource
 {
-	string? GetKey();
+	IReadOnlyList<string> GetKeys();
 }
 
 /// <summary>
@@ -15,5 +15,5 @@ public interface IWindsurfApiKeySource
 /// </summary>
 public sealed class WindsurfApiKeySource(ILogger logger) : IWindsurfApiKeySource
 {
-	public string? GetKey() => JetBrainsApiKeyReader.ReadKey(logger);
+	public IReadOnlyList<string> GetKeys() => ApiKeyReader.ReadKeys(logger);
 }

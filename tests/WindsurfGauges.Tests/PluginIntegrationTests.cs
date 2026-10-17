@@ -51,7 +51,7 @@ public sealed class PluginIntegrationTests
 
 	private sealed class NullApiKeySource : IWindsurfApiKeySource
 	{
-		public string? GetKey() => null;
+		public IReadOnlyList<string> GetKeys() => [];
 	}
 
 	private sealed class UnreachableHttpClientFactory : IHttpClientFactory
@@ -70,7 +70,7 @@ public sealed class PluginIntegrationTests
 	public async Task The_title_template_resolves_against_the_plugins_own_variables()
 	{
 		var logger = new Serilog.LoggerConfiguration().CreateLogger();
-		var service = new WindsurfUsageService(new FakeHttpClientFactory(), () => null, logger);
+		var service = new WindsurfUsageService(new FakeHttpClientFactory(), () => [], logger);
 		var provider = new WindsurfVariableProvider(service);
 		var resolver = new WindsurfGauges.GaugeFaceResolver(provider, null, logger);
 
@@ -83,7 +83,7 @@ public sealed class PluginIntegrationTests
 	public void The_usage_variables_are_declared()
 	{
 		var logger = new Serilog.LoggerConfiguration().CreateLogger();
-		var service = new WindsurfUsageService(new FakeHttpClientFactory(), () => null, logger);
+		var service = new WindsurfUsageService(new FakeHttpClientFactory(), () => [], logger);
 		var provider = new WindsurfVariableProvider(service);
 
 		var names = provider.Variables.Select(v => v.Name).ToArray();

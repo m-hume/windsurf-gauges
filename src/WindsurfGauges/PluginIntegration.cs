@@ -28,7 +28,7 @@ public sealed class PluginIntegration : IPluginIntegration, IVariableProvider, I
 	public PluginIntegration(ILogger logger, IHttpClientFactory httpClientFactory, IWindsurfApiKeySource apiKeySource)
 	{
 		_logger = logger.ForContext<PluginIntegration>();
-		_usage = new WindsurfUsageService(httpClientFactory, apiKeySource.GetKey, logger);
+		_usage = new WindsurfUsageService(httpClientFactory, apiKeySource.GetKeys, logger);
 		_variables = new WindsurfVariableProvider(_usage);
 	}
 
@@ -52,7 +52,8 @@ public sealed class PluginIntegration : IPluginIntegration, IVariableProvider, I
 		true,
 		new Dictionary<string, string>())
 	{
-		SupportsFlows = true
+		SupportsFlows = true,
+		DefaultShortPressAction = new WidgetDefaultAction("refresh-usage", new Dictionary<string, string>())
 	};
 
 	public IReadOnlyList<UiSurfaceDeclaration> Surfaces =>

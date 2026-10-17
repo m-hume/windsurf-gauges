@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using Serilog;
@@ -32,7 +33,7 @@ internal sealed class WindsurfUsageService : IDisposable
 	public const double MaxPollSeconds = 3600;
 
 	private readonly IHttpClientFactory _httpClientFactory;
-	private readonly Func<string?> _apiKeyAccessor;
+	private readonly Func<IReadOnlyList<string>> _keysAccessor;
 	private readonly ILogger _logger;
 	private readonly Timer _timer;
 	private readonly CancellationTokenSource _stopping = new();
@@ -40,10 +41,10 @@ internal sealed class WindsurfUsageService : IDisposable
 	private UsageSnapshot? _snapshot;
 	private bool _disposed;
 
-	public WindsurfUsageService(IHttpClientFactory httpClientFactory, Func<string?> apiKeyAccessor, ILogger logger)
+	public WindsurfUsageService(IHttpClientFactory httpClientFactory, Func<IReadOnlyList<string>> keysAccessor, ILogger logger)
 	{
 		_httpClientFactory = httpClientFactory;
-		_apiKeyAccessor = apiKeyAccessor;
+		_keysAccessor = keysAccessor;
 		_logger = logger.ForContext<WindsurfUsageService>();
 		_timer = new Timer(OnTick, null, TimeSpan.Zero, TimeSpan.FromSeconds(DefaultPollSeconds));
 	}
@@ -81,18 +82,24 @@ internal sealed class WindsurfUsageService : IDisposable
 			return true;
 		try
 		{
-			var apiKey = _apiKeyAccessor();
-			if (string.IsNullOrWhiteSpace(apiKey))
+			var keys = _keysAccessor();
+			if (keys.Count == 0)
 			{
 				_logger.Information(
-					"No API key: the plugin settings hold no key and none was found under the JetBrains options folder");
+					"No API key: install and sign in to a Windsurf JetBrains plugin, Devin Desktop or the Windsurf IDE");
 				return false;
 			}
 
-			var snapshot = await FetchAsync(apiKey, _stopping.Token).ConfigureAwait(false);
+			UsageSnapshot? snapshot = null;
+			foreach (var apiKey in keys)
+			{
+				snapshot = await FetchAsync(apiKey, _stopping.Token).ConfigureAwait(false);
+				if (snapshot is not null)
+					break;
+			}
 			if (snapshot is null)
 			{
-				_logger.Information("Usage poll failed: GetUserStatus did not return a usable status");
+				_logger.Information("Usage poll failed: no candidate key authenticated GetUserStatus");
 				return false;
 			}
 			_snapshot = snapshot;
@@ -214,58 +221,68 @@ internal sealed class WindsurfUsageService : IDisposable
 }
 
 /// <summary>
-/// Reads the Windsurf API key the JetBrains plugin stores in each IDE's options/other.xml, so the
-/// plugin works without configuration on a machine that has the plugin installed and signed in.
+/// Collects the API keys the Windsurf-family clients store on disk: the JetBrains plugin's
+/// options/other.xml files, and the Devin Desktop / Windsurf IDE global storage databases. The
+/// JetBrains and Devin tokens are different schemes but both authenticate the same GetUserStatus
+/// endpoint, so every candidate is tried until one answers.
 /// </summary>
-internal static partial class JetBrainsApiKeyReader
+internal static partial class ApiKeyReader
 {
+	[GeneratedRegex("\"apiKey\"\\s*:\\s*\"([^\"]+)\"")]
+	private static partial Regex DbApiKeyRegex();
+
 	[GeneratedRegex("sk-ws-[A-Za-z0-9_-]+")]
-	private static partial Regex ApiKeyRegex();
+	private static partial Regex XmlApiKeyRegex();
 
-	public static string? ReadKey(ILogger logger)
+	public static IReadOnlyList<string> ReadKeys(ILogger logger)
 	{
-		if (!OperatingSystem.IsWindows())
-			return null;
-		try
-		{
-			var options = Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-				"JetBrains");
-			if (!Directory.Exists(options))
-			{
-				logger.Information("API key lookup: {Path} does not exist", options);
-				return null;
-			}
+		var keys = new List<string>();
+		var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
-			// IgnoreInaccessible: one unreadable subfolder must not abort the whole scan.
+		var jetbrains = Path.Combine(appData, "JetBrains");
+		if (Directory.Exists(jetbrains))
+		{
 			var files = Directory.EnumerateFiles(
-				options, "other.xml",
+				jetbrains, "other.xml",
 				new EnumerationOptions
 				{
 					IgnoreInaccessible = true,
 					RecurseSubdirectories = true,
 					MatchCasing = MatchCasing.CaseInsensitive
-				}).ToList();
-			logger.Information("API key lookup: scanning {Path}, found {Count} options files", options, files.Count);
-
+				});
 			foreach (var file in files)
 			{
-				var match = ApiKeyRegex().Match(File.ReadAllText(file));
-				if (match.Success)
+				var match = XmlApiKeyRegex().Match(File.ReadAllText(file));
+				if (match.Success && !keys.Contains(match.Value))
 				{
+					keys.Add(match.Value);
 					logger.Information("API key found in {File}", file);
-					return match.Value;
 				}
 			}
-
-			logger.Information("API key lookup: no key in {Count} options files", files.Count);
 		}
-		catch (Exception exception)
+		else
 		{
-			logger.Information("API key lookup failed: {Message}", exception.Message);
-			return null;
+			logger.Information("API key lookup: {Path} does not exist", jetbrains);
 		}
-		return null;
+
+		// Devin Desktop and Windsurf IDE: the token lives in the global storage database's
+		// windsurfAuthStatus JSON. Read from the file bytes directly: no SQLite dependency, and
+		// the value is stored as plain text inside the database pages.
+		foreach (var app in new[] { "Devin", "Windsurf" })
+		{
+			var db = Path.Combine(appData, app, "User", "globalStorage", "state.vscdb");
+			if (!File.Exists(db))
+				continue;
+			var match = DbApiKeyRegex().Match(File.ReadAllText(db, Encoding.Latin1));
+			if (match.Success && !keys.Contains(match.Groups[1].Value))
+			{
+				keys.Add(match.Groups[1].Value);
+				logger.Information("API key found in {Db}", db);
+			}
+		}
+
+		logger.Information("API key lookup: {Count} candidate key(s)", keys.Count);
+		return keys;
 	}
 }
 

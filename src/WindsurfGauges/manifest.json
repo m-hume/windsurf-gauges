@@ -3,7 +3,7 @@
   "manifestVersion": 1,
   "id": "com.m-hume.windsurf-gauges",
   "name": "Windsurf Gauges",
-  "version": "1.5.5",
+  "version": "1.5.6",
   "description": "Windsurf usage gauges for Macro Deck: daily and weekly quota, extra usage balance, with a gauge widget that draws the value and a label inside the arc and a title that supports variables.",
   "icon": "Assets/icon.svg",
   "entrypoints": {

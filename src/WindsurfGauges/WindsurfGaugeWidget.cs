@@ -24,7 +24,7 @@ internal static class WindsurfGaugeWidget
 	private static readonly UiSize Gap = UiSize.Capped(0.02, 3);
 
 	public const string DefaultData =
-		"""{"title":"Windsurf usage (${{ vars.windsurf_extra_balance }})","style":"arc","gauges":[{"variable":"windsurf_daily_used","name":"Daily","max":100,"id":"2ffdb9ac399347a58dda0f98b80f4485","thresholdsEnabled":true,"labelSize":0.36,"valueSize":0.24,"valueSuffix":"%"},{"variable":"windsurf_weekly_used","name":"Weekly","max":100,"id":"0cc69335353346539c7e79f42b5955f1","thresholdsEnabled":true,"valueSize":0.24,"labelSize":0.36,"valueSuffix":"%"}]}""";
+		"""{"title":"Windsurf usage (${{ vars.windsurf_extra_balance }})","style":"arc","gauges":[{"variable":"windsurf_daily_used","name":"Daily","max":100,"id":"2ffdb9ac399347a58dda0f98b80f4485","thresholdsEnabled":true,"valueSuffix":"%"},{"variable":"windsurf_weekly_used","name":"Weekly","max":100,"id":"0cc69335353346539c7e79f42b5955f1","thresholdsEnabled":true,"valueSuffix":"%"}]}""";
 
 	public const string DataSchema =
 		"""{"type":"object","properties":{"title":{"type":"string"},"style":{"type":"string"},"gauges":{"type":"array"},"flows":{"type":"array"},"backgroundColor":{"type":"string"},"border":{"type":"object"},"borderStyle":{"type":"string"},"borderColor":{"type":"string"}},"required":[]}""";

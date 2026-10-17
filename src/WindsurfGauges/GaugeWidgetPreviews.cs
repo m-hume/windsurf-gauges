@@ -8,10 +8,10 @@ namespace WindsurfGauges;
 internal static class GaugeWidgetPreviews
 {
 	private static readonly UiState<GaugeFace> Daily = new(
-		new GaugeFace { Level = 0.12, Value = "12", Color = null, Name = "Daily used" });
+		new GaugeFace { Level = 0.12, Value = "12", Color = null, Name = "Daily" });
 
 	private static readonly UiState<GaugeFace> Weekly = new(
-		new GaugeFace { Level = 0.32, Value = "32", Color = null, Name = "Weekly used" });
+		new GaugeFace { Level = 0.32, Value = "32", Color = null, Name = "Weekly" });
 
 	private static WindsurfGaugesData SampleConfig(bool arc) => new()
 	{
@@ -19,8 +19,8 @@ internal static class GaugeWidgetPreviews
 		Style = arc ? WindsurfGaugesData.StyleArc : WindsurfGaugesData.StyleRing,
 		Gauges =
 		[
-			new WindsurfGaugeConfig { Id = "daily", Variable = "windsurf_daily_used", Name = "Daily used", Max = 100, ValueSuffix = "%" },
-			new WindsurfGaugeConfig { Id = "weekly", Variable = "windsurf_weekly_used", Name = "Weekly used", Max = 100, ValueSuffix = "%" }
+			new WindsurfGaugeConfig { Id = "daily", Variable = "windsurf_daily_used", Name = "Daily", Max = 100, ValueSuffix = "%" },
+			new WindsurfGaugeConfig { Id = "weekly", Variable = "windsurf_weekly_used", Name = "Weekly", Max = 100, ValueSuffix = "%" }
 		]
 	};
 
@@ -50,9 +50,9 @@ internal static class GaugeWidgetPreviews
 	public static UiElement Warning() => WindsurfGaugeWidget.Build(
 		new WindsurfGaugesData
 		{
-			Gauges = [new WindsurfGaugeConfig { Id = "daily", Variable = "windsurf_daily_used", Name = "Daily used", Max = 100, ValueSuffix = "%" }]
+			Gauges = [new WindsurfGaugeConfig { Id = "daily", Variable = "windsurf_daily_used", Name = "Daily", Max = 100, ValueSuffix = "%" }]
 		},
 		new UiState<string>("Windsurf"),
-		[new UiState<GaugeFace>(new GaugeFace { Level = 0.93, Value = "93", Color = GaugeFace.WarningColor, Name = "Daily used" })],
+		[new UiState<GaugeFace>(new GaugeFace { Level = 0.93, Value = "93", Color = GaugeFace.WarningColor, Name = "Daily" })],
 		null);
 }

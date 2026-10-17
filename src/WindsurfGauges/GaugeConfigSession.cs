@@ -499,7 +499,7 @@ internal sealed class GaugeConfigSession : IUiSession
 			() => Find(gauges.Value, id)?[field] is JsonValue value &&
 				value.TryGetValue<double>(out var fraction)
 					? Math.Round(fraction * 100, 1)
-					: defaultFraction * 100,
+					: Math.Round(defaultFraction * 100, 1),
 			value => Mutate(gauges, id, gauge =>
 			{
 				if (double.IsFinite(value) && value > 0)

@@ -58,8 +58,8 @@ internal sealed class GaugeSession : IUiSession, IDisposable, IAsyncDisposable
 		Style = WindsurfGaugesData.StyleArc,
 		Gauges =
 		[
-			new WindsurfGaugeConfig { Id = "daily", Variable = "windsurf_daily_used", Name = "Daily", Max = 100, ValueSuffix = "%" },
-			new WindsurfGaugeConfig { Id = "weekly", Variable = "windsurf_weekly_used", Name = "Weekly", Max = 100, ValueSuffix = "%" }
+			new WindsurfGaugeConfig { Id = "daily", Variable = "windsurf_daily_used", Name = "Daily", Max = 100, ValueSuffix = "%", ThresholdsEnabled = true },
+			new WindsurfGaugeConfig { Id = "weekly", Variable = "windsurf_weekly_used", Name = "Weekly", Max = 100, ValueSuffix = "%", ThresholdsEnabled = true }
 		]
 	};
 
@@ -101,7 +101,7 @@ internal sealed class GaugeSession : IUiSession, IDisposable, IAsyncDisposable
 		if (!live)
 		{
 			// The picker sample: representative values without touching any variable.
-			var sampleValues = new[] { 32d, 68d, 18d, 86d, 12d, 55d, 74d, 41d };
+			var sampleValues = new[] { 26d, 78d, 18d, 94d, 12d, 55d, 74d, 41d };
 			for (var i = 0; i < faces.Count; i++)
 			{
 				var gauge = config.Shown[i];
@@ -110,7 +110,7 @@ internal sealed class GaugeSession : IUiSession, IDisposable, IAsyncDisposable
 				{
 					Level = GaugeFaceResolver.Level(value, gauge),
 					Value = GaugeFaceResolver.FormatValue(value, 0),
-					Color = gauge.Color,
+					Color = GaugeFaceResolver.ColorOf(value, gauge),
 					Name = gauge.Name ?? ""
 				});
 			}

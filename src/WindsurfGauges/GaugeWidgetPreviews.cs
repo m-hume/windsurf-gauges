@@ -8,10 +8,10 @@ namespace WindsurfGauges;
 internal static class GaugeWidgetPreviews
 {
 	private static readonly UiState<GaugeFace> Daily = new(
-		new GaugeFace { Level = 0.12, Value = "12", Color = null, Name = "Daily" });
+		new GaugeFace { Level = 0.12, Value = "12", Color = ThresholdDefaults.Green, Name = "Daily" });
 
 	private static readonly UiState<GaugeFace> Weekly = new(
-		new GaugeFace { Level = 0.32, Value = "32", Color = null, Name = "Weekly" });
+		new GaugeFace { Level = 0.78, Value = "78", Color = ThresholdDefaults.Orange, Name = "Weekly" });
 
 	private static WindsurfGaugesData SampleConfig(bool arc) => new()
 	{

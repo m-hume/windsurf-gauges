@@ -17,4 +17,4 @@ jobs:
       - run: dotnet build
       - run: dotnet test
       - run: macrodeck-plugin build --source src/WindsurfGauges --rid win-x64 --output ./artifacts
-      - run: macrodeck-plugin validate --artifact ./artifacts/com.m-hume.windsurf-gauges-*.macroDeckPlugin
+      - run: Get-ChildItem ./artifacts -Filter *.macroDeckPlugin | ForEach-Object { macrodeck-plugin validate --artifact $_.FullName }

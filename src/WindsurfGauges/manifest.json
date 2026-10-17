@@ -1,0 +1,40 @@
+{
+  "$schema": "https://schemas.macro-deck.app/plugin-manifest-v1.schema.json",
+  "manifestVersion": 1,
+  "id": "com.m-hume.windsurf-gauges",
+  "name": "Windsurf Gauges",
+  "version": "1.4.3",
+  "description": "Windsurf usage gauges for Macro Deck: daily and weekly quota, extra usage balance, with a gauge widget that draws the value and a label inside the arc and a title that supports variables.",
+  "icon": "Assets/icon.svg",
+  "entrypoints": {
+    "win-x64": {
+      "executable": "runtimes/win-x64/WindsurfGauges.dll",
+      "runtime": {
+        "kind": "FrameworkDependent",
+        "dotnetVersion": "10.0"
+      }
+    },
+    "osx-arm64": {
+      "executable": "runtimes/osx-arm64/WindsurfGauges.dll",
+      "runtime": {
+        "kind": "FrameworkDependent",
+        "dotnetVersion": "10.0"
+      }
+    },
+    "linux-x64": {
+      "executable": "runtimes/linux-x64/WindsurfGauges.dll",
+      "runtime": {
+        "kind": "FrameworkDependent",
+        "dotnetVersion": "10.0"
+      }
+    }
+  },
+  "publisher": {
+    "name": "Jon"
+  },
+  "license": "MIT",
+  "compatibility": {
+    "macroDeck": ">=3.0.0-0"
+  },
+  "repository": "https://github.com/m-hume/windsurf-gauges"
+}

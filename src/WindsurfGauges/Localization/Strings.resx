@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- The default-language file. Every translation is checked against it and the fallback chain ends
+       here, so it is required even for a plugin that ships one language. Add a language by adding
+       Localization/Strings.<culture>.resx beside it (Strings.de.resx, Strings.pt-BR.resx).
+       A dotted key becomes a nested class: Actions.RefreshUsage.Name is Strings.Actions.RefreshUsage.Name(). -->
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Actions.RefreshUsage.Name" xml:space="preserve">
+    <value>Refresh Windsurf usage</value>
+  </data>
+  <data name="Actions.RefreshUsage.Description" xml:space="preserve">
+    <value>Polls Windsurf for the latest usage figures immediately instead of waiting for the next scheduled refresh.</value>
+  </data>
+  <data name="Actions.RefreshUsage.Failure" xml:space="preserve">
+    <value>Could not reach Windsurf. Check the API key in the plugin settings.</value>
+  </data>
+  <data name="Variables.DailyUsed.DisplayName" xml:space="preserve">
+    <value>Windsurf daily quota used</value>
+  </data>
+  <data name="Variables.DailyUsed.Description" xml:space="preserve">
+    <value>Percent of the daily Windsurf quota already used.</value>
+  </data>
+  <data name="Variables.WeeklyUsed.DisplayName" xml:space="preserve">
+    <value>Windsurf weekly quota used</value>
+  </data>
+  <data name="Variables.WeeklyUsed.Description" xml:space="preserve">
+    <value>Percent of the weekly Windsurf quota already used.</value>
+  </data>
+  <data name="Variables.ExtraBalance.DisplayName" xml:space="preserve">
+    <value>Windsurf extra usage balance</value>
+  </data>
+  <data name="Variables.ExtraBalance.Description" xml:space="preserve">
+    <value>The remaining extra usage balance in dollars.</value>
+  </data>
+  <data name="Variables.Plan.DisplayName" xml:space="preserve">
+    <value>Windsurf plan</value>
+  </data>
+  <data name="Variables.Plan.Description" xml:space="preserve">
+    <value>The name of the active Windsurf plan.</value>
+  </data>
+  <data name="Variables.LastUpdate.DisplayName" xml:space="preserve">
+    <value>Windsurf usage last update</value>
+  </data>
+  <data name="Variables.LastUpdate.Description" xml:space="preserve">
+    <value>When the usage figures were last refreshed.</value>
+  </data>
+  <data name="Variables.PlanReset.DisplayName" xml:space="preserve">
+    <value>Windsurf plan reset date</value>
+  </data>
+  <data name="Variables.PlanReset.Description" xml:space="preserve">
+    <value>When the Windsurf plan resets, as a date and time.</value>
+  </data>
+  <data name="Variables.PlanDaysLeft.DisplayName" xml:space="preserve">
+    <value>Windsurf plan days left</value>
+  </data>
+  <data name="Variables.PlanDaysLeft.Description" xml:space="preserve">
+    <value>Days until the Windsurf plan resets.</value>
+  </data>
+  <data name="Variables.DailyReset.DisplayName" xml:space="preserve">
+    <value>Windsurf daily quota reset</value>
+  </data>
+  <data name="Variables.DailyReset.Description" xml:space="preserve">
+    <value>When the daily quota resets, as a date and time.</value>
+  </data>
+  <data name="Variables.WeeklyReset.DisplayName" xml:space="preserve">
+    <value>Windsurf weekly quota reset</value>
+  </data>
+  <data name="Variables.WeeklyReset.Description" xml:space="preserve">
+    <value>When the weekly quota resets, as a date and time.</value>
+  </data>
+  <data name="Variables.Email.DisplayName" xml:space="preserve">
+    <value>Windsurf account email</value>
+  </data>
+  <data name="Variables.Email.Description" xml:space="preserve">
+    <value>The email address the plugin is signed in with.</value>
+  </data>
+  <data name="Widgets.Gauge.Name" xml:space="preserve">
+    <value>Windsurf gauges</value>
+  </data>
+  <data name="Widgets.Gauge.Description" xml:space="preserve">
+    <value>Arc and ring gauges for any numeric variables, with the value and label drawn inside the ring and a title that supports variables.</value>
+  </data>
+  <data name="Widgets.Gauge.EmptyHint" xml:space="preserve">
+    <value>Add a gauge in this widget's settings.</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Title.Label" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Title.Description" xml:space="preserve">
+    <value>Shown above the gauges. Supports variables, for example Windsurf {{ vars.windsurf_plan }}.</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Style.Label" xml:space="preserve">
+    <value>Style</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Style.Ring" xml:space="preserve">
+    <value>Full ring</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Style.Arc" xml:space="preserve">
+    <value>Three-quarter arc</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Presets.Heading" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Presets.Daily" xml:space="preserve">
+    <value>Daily usage</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Presets.DailyLabel" xml:space="preserve">
+    <value>Daily used</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Presets.Weekly" xml:space="preserve">
+    <value>Weekly usage</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Presets.WeeklyLabel" xml:space="preserve">
+    <value>Weekly used</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Presets.Extra" xml:space="preserve">
+    <value>Extra balance</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Presets.ExtraLabel" xml:space="preserve">
+    <value>Extra balance</value>
+  </data>
+  <data name="Widgets.Gauge.Config.FullHint" xml:space="preserve">
+    <value>This widget holds at most 8 gauges. Remove one to add another.</value>
+  </data>
+  <data name="Widgets.Gauge.Config.List.Heading" xml:space="preserve">
+    <value>Gauges</value>
+  </data>
+  <data name="Widgets.Gauge.Config.List.Add" xml:space="preserve">
+    <value>Add gauge</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Appearance.Heading" xml:space="preserve">
+    <value>Appearance</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.Variable" xml:space="preserve">
+    <value>Value variable</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.Name" xml:space="preserve">
+    <value>Label inside gauge</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.NameHint" xml:space="preserve">
+    <value>Drawn inside the ring above the value. Supports variables, for example {{ vars.windsurf_plan }}. When set, the icon is not drawn.</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.Icon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.IconColor" xml:space="preserve">
+    <value>Icon color</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.Minimum" xml:space="preserve">
+    <value>Minimum</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.Maximum" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.MaximumHint" xml:space="preserve">
+    <value>0 means automatic: the variable's declared maximum, or minimum plus 100.</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.Color" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.ColorThresholds" xml:space="preserve">
+    <value>Color thresholds</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.ColorThresholdsDescription" xml:space="preserve">
+    <value>Colour the ring by which band the value falls into.</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.WarningHint" xml:space="preserve">
+    <value>Turn the ring red when the value crosses the threshold.</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.WarningOff" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.WarningAbove" xml:space="preserve">
+    <value>Above</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.WarningBelow" xml:space="preserve">
+    <value>Below</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.Threshold" xml:space="preserve">
+    <value>Threshold</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.ValueSize" xml:space="preserve">
+    <value>Value font size (% of tile)</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.ValueSizeHint" xml:space="preserve">
+    <value>The value's font size as a percentage of the tile height. The default is 22.</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.LabelSize" xml:space="preserve">
+    <value>Label font size (% of tile)</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.LabelSizeHint" xml:space="preserve">
+    <value>The inside label's font size as a percentage of the tile height. The default is 11.</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.ValueSuffix" xml:space="preserve">
+    <value>Value suffix</value>
+  </data>
+  <data name="Widgets.Gauge.Config.Fields.ValueSuffixHint" xml:space="preserve">
+    <value>Drawn right after the value, for example %. Supports variables.</value>
+  </data>
+  <data name="Config.Polling.Title" xml:space="preserve">
+    <value>Windsurf Gauges</value>
+  </data>
+  <data name="Config.Polling.Description" xml:space="preserve">
+    <value>How often the plugin polls Windsurf for fresh usage figures.</value>
+  </data>
+  <data name="Config.Polling.Field.Label" xml:space="preserve">
+    <value>Poll interval (seconds)</value>
+  </data>
+  <data name="Config.Polling.Field.Description" xml:space="preserve">
+    <value>Between 30 and 3600 seconds. The default is 300 (five minutes).</value>
+  </data>
+  <data name="Config.Polling.Field.Invalid" xml:space="preserve">
+    <value>Enter a number of seconds between 30 and 3600.</value>
+  </data>
+</root>

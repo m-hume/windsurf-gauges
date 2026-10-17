@@ -239,30 +239,37 @@ internal static partial class ApiKeyReader
 		var keys = new List<string>();
 		var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
-		var jetbrains = Path.Combine(appData, "JetBrains");
-		if (Directory.Exists(jetbrains))
+		try
 		{
-			var files = Directory.EnumerateFiles(
-				jetbrains, "other.xml",
-				new EnumerationOptions
-				{
-					IgnoreInaccessible = true,
-					RecurseSubdirectories = true,
-					MatchCasing = MatchCasing.CaseInsensitive
-				});
-			foreach (var file in files)
+			var jetbrains = Path.Combine(appData, "JetBrains");
+			if (Directory.Exists(jetbrains))
 			{
-				var match = XmlApiKeyRegex().Match(File.ReadAllText(file));
-				if (match.Success && !keys.Contains(match.Value))
+				var files = Directory.EnumerateFiles(
+					jetbrains, "other.xml",
+					new EnumerationOptions
+					{
+						IgnoreInaccessible = true,
+						RecurseSubdirectories = true,
+						MatchCasing = MatchCasing.CaseInsensitive
+					});
+				foreach (var file in files)
 				{
-					keys.Add(match.Value);
-					logger.Information("API key found in {File}", file);
+					var match = XmlApiKeyRegex().Match(File.ReadAllText(file));
+					if (match.Success && !keys.Contains(match.Value))
+					{
+						keys.Add(match.Value);
+						logger.Information("API key found in {File}", file);
+					}
 				}
 			}
+			else
+			{
+				logger.Information("API key lookup: {Path} does not exist", jetbrains);
+			}
 		}
-		else
+		catch (Exception exception)
 		{
-			logger.Information("API key lookup: {Path} does not exist", jetbrains);
+			logger.Information("JetBrains key lookup failed: {Message}", exception.Message);
 		}
 
 		// Devin Desktop and Windsurf IDE: the token lives in the global storage database's
@@ -270,14 +277,26 @@ internal static partial class ApiKeyReader
 		// the value is stored as plain text inside the database pages.
 		foreach (var app in new[] { "Devin", "Windsurf" })
 		{
-			var db = Path.Combine(appData, app, "User", "globalStorage", "state.vscdb");
-			if (!File.Exists(db))
-				continue;
-			var match = DbApiKeyRegex().Match(File.ReadAllText(db, Encoding.Latin1));
-			if (match.Success && !keys.Contains(match.Groups[1].Value))
+			try
 			{
-				keys.Add(match.Groups[1].Value);
-				logger.Information("API key found in {Db}", db);
+				var db = Path.Combine(appData, app, "User", "globalStorage", "state.vscdb");
+				if (!File.Exists(db))
+					continue;
+				// The owning app holds the database open for writing; a FileShare.Read open would
+				// deny that and fail. Sharing read and write coexists with its handle.
+				using var stream = new FileStream(
+					db, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+				using var reader = new StreamReader(stream, Encoding.Latin1);
+				var match = DbApiKeyRegex().Match(reader.ReadToEnd());
+				if (match.Success && !keys.Contains(match.Groups[1].Value))
+				{
+					keys.Add(match.Groups[1].Value);
+					logger.Information("API key found in {Db}", db);
+				}
+			}
+			catch (Exception exception)
+			{
+				logger.Information("{App} key lookup failed: {Message}", app, exception.Message);
 			}
 		}
 

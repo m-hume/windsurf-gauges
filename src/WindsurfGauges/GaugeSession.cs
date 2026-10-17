@@ -52,6 +52,9 @@ internal sealed class GaugeSession : IUiSession, IDisposable, IAsyncDisposable
 			_timer = new Timer(OnTick, null, TimeSpan.Zero, RefreshPeriod);
 	}
 
+	private const double SampleValueSize = 0.1;
+	private const double SampleLabelSize = 0.11;
+
 	private static readonly WindsurfGaugesData SampleConfig = new()
 	{
 		Title = "Windsurf",
@@ -74,9 +77,23 @@ internal sealed class GaugeSession : IUiSession, IDisposable, IAsyncDisposable
 		CancellationToken cancellationToken)
 	{
 		// The picker card asks for a representative sample: when the stored data holds no gauges
-		// (or carries none at all), render the sample pair instead of the empty hint.
-		if (live == false && config.Shown.Count == 0)
-			config = SampleConfig;
+		// (or carries none at all), render the sample pair instead of the empty hint. The card is
+		// a small picture, so cap the text sizes below the widget defaults.
+		if (!live)
+		{
+			if (config.Shown.Count == 0)
+				config = SampleConfig;
+			config = config with
+			{
+				Gauges = config.Gauges
+					.Select(gauge => gauge with
+					{
+						ValueSize = Math.Min(gauge.ValueSize, SampleValueSize),
+						LabelSize = Math.Min(gauge.LabelSize, SampleLabelSize)
+					})
+					.ToList()
+			};
+		}
 		var faces = config.Shown.Select(_ => new UiState<GaugeFace>(
 			new GaugeFace { Color = null, Name = "" })).ToList();
 

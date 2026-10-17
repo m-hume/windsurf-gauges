@@ -169,9 +169,8 @@ internal sealed class WindsurfUsageService : IDisposable
 			await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false),
 			cancellationToken: cancellationToken).ConfigureAwait(false);
 
-		var status = document.RootElement
-			.GetProperty("userStatus")
-			.GetProperty("planStatus");
+		var userStatus = document.RootElement.GetProperty("userStatus");
+		var status = userStatus.GetProperty("planStatus");
 
 		var planInfo = status.GetProperty("planInfo");
 		var dailyUsed = 100 - ReadNumber(status, "dailyQuotaRemainingPercent");
@@ -182,7 +181,7 @@ internal sealed class WindsurfUsageService : IDisposable
 				? planName.GetString() ?? "unknown"
 				: "unknown";
 
-		var email = status.TryGetProperty("email", out var emailElement) &&
+		var email = userStatus.TryGetProperty("email", out var emailElement) &&
 			emailElement.ValueKind == JsonValueKind.String
 				? emailElement.GetString() ?? ""
 				: "";

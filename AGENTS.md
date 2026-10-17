@@ -3,89 +3,104 @@
 This file must be kept up to date. When a rule here stops matching reality, or a new rule emerges from
 work in this repository, update this file as part of that change rather than leaving it to drift.
 
-This repository is the **starting point for a Macro Deck 3 out-of-process plugin**, and it is
-simultaneously the content of the `dotnet new macrodeck-plugin` template package. The plugin under
-`src/WindsurfGauges/` is deliberately minimal: one integration and one example action,
-`LogMessageAction`, which exists solely to show the localized shape of an action end to end. It is
-meant to be replaced by the plugin's real first action, not grown into a second sample. Nothing else
-is demonstrated here.
+This repository is **Windsurf Gauges**, a Macro Deck 3 out-of-process plugin (`com.m-hume.windsurf-gauges`).
+It polls Codeium's cloud `GetUserStatus` endpoint for the signed-in account's Windsurf usage and
+exposes it as Macro Deck variables, plus a gauges widget type modelled on the built-in Gauges
+widget with this plugin's extensions (value and label inside the ring, independent font sizes,
+template-aware title and value suffix).
+
+[README.md](README.md) is the human-facing guide: what it provides, where the data comes from, how
+to build and pack. This file is the rule set for changing the plugin. Read it before changing code.
 
 Worked examples of every capability live in the
-[sample plugins repository](https://github.com/Macro-Deck-App/Macro-Deck-Sample-Plugins), not here.
-Read from there rather than growing this template.
-
-[README.md](README.md) is the human-facing guide: how to build, how to run against a real host, how to
-pack. This file is the rule set for writing the plugin. Read it before changing code. The template
-package itself is covered by
-[packaging/README.md](https://github.com/Macro-Deck-App/Macro-Deck-Plugin-Template/blob/main/packaging/README.md).
+[sample plugins repository](https://github.com/Macro-Deck-App/Macro-Deck-Sample-Plugins); the
+built-in Gauges widget's sources live in the
+[Macro Deck repository](https://github.com/Macro-Deck-App/Macro-Deck) under
+`host/src/MacroDeckHost.Widgets/Gauges/` and are the reference for the widget's semantics.
 
 ## Orientation
 
 ```
 src/WindsurfGauges/
-  Program.cs             builder chain - a few lines and a RunAsync
-  manifest.json          identity, icon, per-platform entrypoints
-  macrodeck-build.json   one publish target per declared entrypoint
-  PluginIntegration.cs   the integration: lifecycle and capability opt-ins
-  LogMessageAction.cs    the example action, localized end to end
-  Localization/Strings.resx   default-culture strings; Strings.<tag>.resx per language
-  Assets/icon.svg        the icon the manifest declares
-  Properties/launchSettings.json   the single real-host debug profile
+  Program.cs                    builder chain, registers the API key source
+  manifest.json                 identity, icon, win-x64 entrypoint, repository
+  macrodeck-build.json          the win-x64 publish target
+  PluginIntegration.cs          the integration: lifecycle, capabilities, widget type registration
+  WindsurfUsageService.cs       the poll loop, the GetUserStatus request, and ApiKeyReader
+  WindsurfApiKeySource.cs       the key source interface and its disk-reading default
+  WindsurfVariableProvider.cs   the ten windsurf_* variables
+  GaugeModels.cs                the widget's stored data shape (WindsurfGaugesData, WindsurfGaugeConfig)
+  GaugeFaceResolver.cs          per-gauge value/level/colour resolution and template resolution
+  GaugeLayout.cs                the built-in's responsive ring grid, ported
+  WindsurfGaugeWidget.cs        the widget view tree, the widget data schema and default data
+  GaugeSession.cs               the live widget session (poll timer, picker sample)
+  GaugeConfigSession.cs         the widget configuration editor
+  PluginConfigFlow.cs           the poll-interval settings flow
+  RefreshUsageAction.cs         the refresh action (also the widget's default short press)
+  ThresholdDefaults.cs          the built-in's default colour bands, ported
+  GaugeWidgetPreviews.cs        [UiPreview] scenarios behind the store images
+  Localization/Strings.resx     default-culture strings; Strings.<tag>.resx per language
+  Assets/icon.svg               the Windsurf logo, taken from the JetBrains plugin's jar
 tests/WindsurfGauges.Tests/
-  PluginIntegrationTests.cs   the plugin builds, the action runs, the catalog is wired
+  PluginIntegrationTests.cs     behaviour, view-building and localization wiring tests
 ```
 
-The template repository carries two more directories that a generated plugin does not:
-`.template.config/` (the `dotnet new` definition) and `packaging/` (the template package project, kept
-out of the solution on purpose).
-
-`.template.config/content/` holds the *only* deliberate copies in this repository: conditional variants
-of `manifest.json` and `macrodeck-build.json`. `dotnet new` selects platforms and omits unsupplied
-optional fields with `//#if` markers, which would make the checked-in files invalid JSON and break
-`macrodeck-plugin validate`, `build` and the manifest reader. So the files under `src/` stay valid and
-the templated variants replace them during generation. **Change one, change the other**: rendering the
-template with default parameters must reproduce the `src/` files byte for byte, which CI checks.
+The widget's data schema and default data live in `WindsurfGaugeWidget.cs` and must stay consistent
+with what `GaugeConfigSession` writes and `GaugeModels` parses.
 
 Authoritative upstream documentation, in the
 [Macro Deck 3 repository](https://github.com/Macro-Deck-App/Macro-Deck-3/tree/main/docs/plugin-development):
 `sdk-reference.md` (every contract type), `plugin-hosting.md` (builder, registration modes, manifest,
 artifact, environment variables), `capability-parity.md` (what behaves differently out of process),
 `analyzers.md`, `conformance.md`, `testing-plugins.md`, `cli.md`. When a question is about SDK behaviour
-rather than this template's own code, look there rather than guessing.
+rather than this plugin's own code, look there rather than guessing.
 
-## Before you start on a fresh plugin
+## Project notes - hard-won, do not regress
 
-`dotnet new macrodeck-plugin` sets the identity and the publication metadata for you:
-
-```bash
-dotnet new macrodeck-plugin -n <Name> --pluginId <id> --pluginName "<Display name>" \
-  --publisher "<Publisher>" --repository <url> --platforms win-x64 --platforms osx-arm64
-```
-
-`--publisher`, `--description`, `--license`, `--repository`, `--homepage` and `--platforms` all land in
-`manifest.json` natively, and `--platforms` drives `macrodeck-build.json` with it. `--homepage` is
-omitted rather than written empty when not supplied, because the schema requires an absolute URL.
-`--repository` is always written and defaults to a placeholder the Store refuses, so pass the real
-one. `macrodeck-plugin new` collects the same values and passes them through.
-
-A repository *cloned* from this template still carries the template's identity, so fix that first, in
-one change:
-
-1. `manifest.json` - `id` (reverse-domain, lowercase, at least two dot-joined kebab segments, e.g.
-   `com.example.my-plugin`), `name`, `version`, `description`, `publisher.name`, `repository`, and
-   `entrypoints` plus the matching `macrodeck-build.json` targets for the platforms you actually ship.
-2. Rename the project, the test project, the solution file and the namespace. The project's
-   `AssemblyName` and `RootNamespace` are pinned: the first names the executable, so change it together
-   with the `entrypoints` paths - never one without the other, or `macrodeck-plugin build` fails with
-   `entrypoint-missing`; the second is where the generated `Strings` class lives.
-3. Replace `Assets/icon.svg`. The manifest's `icon` path is the single source of truth and the host
-   reads that file directly - there is no icon code to change.
-4. Replace `LogMessageAction` with the plugin's real first action, and its keys in
-   `Localization/Strings.resx` with real ones.
-
-`MacroDeck.Plugin.Analyzers` is already referenced with `PrivateAssets="all"` - 13 compile-time
-diagnostics that catch most of the mistakes below while you type, plus the `[MacroDeckSdkUsage]`
-attribute the host reads to report real deprecation usage instead of inferring it. Keep it.
+- **The `GetUserStatus` request body is `{"metadata":{...}}`.** The envelope is mandatory; serializing
+  the metadata record alone answers `BadRequest`. The body is built with `JsonSerializer.Serialize`
+  over `RequestBodyHolder.Envelope`, never with string interpolation: a raw interpolated string that
+  loses its `$` prefix silently degrades `{{...}}` holes into literal text (shipped once, broke every
+  poll).
+- **The response's `email` lives inside `userStatus`**, not at the root; `planEnd` is an ISO string in
+  `planStatus`, the quota resets are unix seconds (and arrive as strings as often as numbers - both
+  parsed).
+- **API keys come from disk, in several schemes.** JetBrains plugins store `sk-ws-...` in
+  `%APPDATA%\JetBrains\*\options\other.xml`; Devin Desktop and the Windsurf IDE store a
+  `devin-session-...` token in `%APPDATA%\{Devin,Windsurf}\User\globalStorage\state.vscdb`. Both
+  schemes authenticate the same endpoint. Every candidate is tried until one answers, so an account
+  signed in on several clients still resolves. The databases are read through a `FileStream` with
+  `FileShare.ReadWrite | FileShare.Delete`: the owning app holds them open for writing, and a
+  `File.ReadAllText` (which denies write sharing) fails with "in use by another process". Each source
+  is isolated in its own try/catch so one locked or missing source cannot abort the others.
+- **A plugin cannot read another plugin's variables.** `IVariableApi` returns only the calling
+  plugin's own variables (the host filters by owner). Template resolution therefore checks this
+  plugin's own variables first and the host second; titles referencing another provider's variable
+  resolve to empty. The built-in widgets can read everything only because they run in the host.
+- **Node ids in a UI tree must be unique across the whole tree.** `UiWidgetAppearance.Section` adds
+  its own `appearance-heading`; adding a second one throws `UiViewException` on `session.open` and
+  Macro Deck falls back to JSON editing with no visible error. The view-building regression tests
+  exist to catch exactly this class of bug - extend them when adding a surface.
+- **`JsonValue.TryGetValue<double>` fails for integer-stored JSON numbers.** Number fields must accept
+  int/long as well, and percent readbacks round (`Math.Round(x * 100, 1)`), because `0.14 * 100` is
+  `14.000000000000002`.
+- **Font sizes are literal fractions of the tile basis** (the config field says percent of tile). Do
+  not multiply them by the layout's ring scale; that shipped once and made every configured size
+  three times smaller than promised.
+- **The picker sample** (`sample: true` preview surface) renders representative gauges with capped
+  text sizes (`SampleValueSize`/`SampleLabelSize`) and threshold colours, never the empty hint.
+- **Preset names and `ConfigFlowResult.Complete` names become stored, user-editable data**: plain
+  default-language strings, not localized values - `LocalizedText.ToString()` yields the raw
+  `plugin:...:Key` token for catalog-backed text.
+- **The generated `Strings` methods return `LocalizedText` wrapping a `LocalizedString`**;
+  `UiText.FromLocalized` wants a `Func<LocalizedString>`, so wrap calls in lambdas; `UiOption.Of`
+  wants the `LocalizedString` directly.
+- **SemVer orders `beta` before `preview`**: the Macro Deck packages are pinned to `3.0.0-beta.17` in
+  `Directory.Packages.props` because a floating `3.0.0-*` resolves to the older `preview.10`. The
+  release workflow pins `cli-version: 3.0.0-beta.17` for the same reason (the workflow's own default
+  was `beta.11` and the Platform refused the upload).
+- **PowerShell does not expand `*` in arguments**: CI enumerates the artifacts folder explicitly
+  instead of passing a glob to `macrodeck-plugin validate`.
 
 ## Store gate
 
@@ -410,9 +425,9 @@ match.
 
 - Work on a branch, not directly on `main`. Use `feature/`, `fix/`, `refactor/`, `chore/`, `docs/` or
   `ci/` with a short kebab-case description, and an issue number where one exists.
-- Publishing the template package requires a pushed semantic-version tag such as
-  `v3.0.0-preview.3`. The publish workflow removes the leading `v` and uses the rest as the NuGet
-  package version. A push to `main` alone never publishes.
+- Publishing to the Store goes through a GitHub release tagged `v<version>`: the release workflow
+  builds it, runs the conformance suite and uploads it to the Creator Portal, where it is submitted
+  for review. A push to `main` alone never publishes.
 - Keep changes focused; no unrelated reformatting.
 - Do not push or open a pull request unless asked.
 - Do not add AI attribution or co-author trailers.

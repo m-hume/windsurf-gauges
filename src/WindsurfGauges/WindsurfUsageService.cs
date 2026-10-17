@@ -39,6 +39,7 @@ internal sealed class WindsurfUsageService : IDisposable
 	private readonly CancellationTokenSource _stopping = new();
 	private readonly SemaphoreSlim _pollGate = new(1, 1);
 	private UsageSnapshot? _snapshot;
+	private IReadOnlyList<string>? _cachedKeys;
 	private bool _disposed;
 
 	public WindsurfUsageService(IHttpClientFactory httpClientFactory, Func<IReadOnlyList<string>> keysAccessor, ILogger logger)
@@ -82,7 +83,9 @@ internal sealed class WindsurfUsageService : IDisposable
 			return true;
 		try
 		{
-			var keys = _keysAccessor();
+			// The disk scan is expensive and the files change rarely: use the cached keys and
+			// re-scan only when none of them authenticates any more (rotation, logout).
+			var keys = _cachedKeys ??= _keysAccessor();
 			if (keys.Count == 0)
 			{
 				_logger.Information(
@@ -96,6 +99,17 @@ internal sealed class WindsurfUsageService : IDisposable
 				snapshot = await FetchAsync(apiKey, _stopping.Token).ConfigureAwait(false);
 				if (snapshot is not null)
 					break;
+			}
+			if (snapshot is null)
+			{
+				_logger.Information("Usage poll failed: re-scanning the disk for keys");
+				keys = _cachedKeys = _keysAccessor();
+				foreach (var apiKey in keys)
+				{
+					snapshot = await FetchAsync(apiKey, _stopping.Token).ConfigureAwait(false);
+					if (snapshot is not null)
+						break;
+				}
 			}
 			if (snapshot is null)
 			{
@@ -228,7 +242,7 @@ internal sealed class WindsurfUsageService : IDisposable
 /// </summary>
 internal static partial class ApiKeyReader
 {
-	[GeneratedRegex("\"apiKey\"\\s*:\\s*\"([^\"]+)\"")]
+	[GeneratedRegex("\"apiKey\"\\s*:\\s*\"((?:sk-ws-|devin-session-)[^\"]+)\"")]
 	private static partial Regex DbApiKeyRegex();
 
 	[GeneratedRegex("sk-ws-[A-Za-z0-9_-]+")]

@@ -65,9 +65,16 @@ The Macro Deck packages are pinned to `3.0.0-beta.17` in `Directory.Packages.pro
 SDK exists yet, and SemVer orders `beta` before `preview`, so a floating version would resolve to
 the older `3.0.0-preview.10`.
 
-## Install locally
+## Prerequisites
 
-Macro Deck, Plugins, install from file, then pick
-`artifacts/com.m-hume.windsurf-gauges-1.4.3-win-x64.macroDeckPlugin`. The package is unsigned, which
-is fine for local use; publishing to the Store would additionally need signing through the Creator
-Portal.
+A Windsurf account, signed in on the same machine in at least one of: Devin Desktop, a Windsurf
+plugin for a JetBrains IDE, or the Windsurf IDE. The plugin reads that client's stored API key; there
+is nothing to configure.
+
+The plugin is Windows-only.
+
+## Install
+
+Install from the Macro Deck Store, or build the artifact and install it from file: Macro Deck,
+Plugins, install from file, then pick
+`artifacts/com.m-hume.windsurf-gauges-1.5.9-win-x64.macroDeckPlugin`.

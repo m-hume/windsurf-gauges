@@ -220,7 +220,7 @@ internal static class WindsurfGaugeWidget
 			{
 				Key = "value",
 				Text = UiText.From(() => face.Value.Value + (gauge.ValueSuffix ?? "")),
-				Size = UiSize.FromBasis(gauge.ValueSize * scale, 0.3),
+				Size = UiSize.FromBasis(gauge.ValueSize, 0.5),
 				Weight = UiValue.Of(UiComponentTextWeights.SemiBold),
 				Role = UiValue.Of(UiComponentTextRoles.Primary),
 				Align = UiValue.Of(UiComponentAlignments.Center),
@@ -234,7 +234,7 @@ internal static class WindsurfGaugeWidget
 			{
 				Key = "name",
 				Text = UiText.From(() => face.Value.Name),
-				Size = UiSize.FromBasis(gauge.LabelSize * scale, 0.3),
+				Size = UiSize.FromBasis(gauge.LabelSize, 0.5),
 				Role = UiValue.Of(UiComponentTextRoles.Muted),
 				Align = UiValue.Of(UiComponentAlignments.Center),
 				MaxLines = 1

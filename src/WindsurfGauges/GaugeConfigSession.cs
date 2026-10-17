@@ -229,7 +229,7 @@ internal sealed class GaugeConfigSession : IUiSession
 		["name"] = name,
 		["max"] = 100.0,
 		["valueSize"] = 0.24,
-		["labelSize"] = 0.36,
+		["labelSize"] = 0.13,
 		["valueSuffix"] = suffix
 	};
 

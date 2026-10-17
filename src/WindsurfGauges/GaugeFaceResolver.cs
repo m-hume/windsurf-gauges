@@ -195,7 +195,7 @@ internal sealed partial class GaugeFaceResolver(
 			{
 				var handle = await FindVariableAsync(variableName, cancellationToken);
 				if (handle is null)
-					logger.Information("Template variable {Name} not found in the plugin's own variables or the host", variableName);
+					logger.Debug("Template variable {Name} not found in the plugin's own variables or the host", variableName);
 				values[variableName] = handle?.Value switch
 				{
 					null or "" => "",

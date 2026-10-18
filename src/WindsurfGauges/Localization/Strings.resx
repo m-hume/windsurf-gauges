@@ -23,7 +23,7 @@
     <value>Polls Windsurf for the latest usage figures immediately instead of waiting for the next scheduled refresh.</value>
   </data>
   <data name="Actions.RefreshUsage.Failure" xml:space="preserve">
-    <value>Could not reach Windsurf. Check the API key in the plugin settings.</value>
+    <value>Could not reach Windsurf. Sign in to the Windsurf IDE, the Windsurf JetBrains plugin or Devin Desktop on this machine.</value>
   </data>
   <data name="Variables.DailyUsed.DisplayName" xml:space="preserve">
     <value>Windsurf daily quota used</value>

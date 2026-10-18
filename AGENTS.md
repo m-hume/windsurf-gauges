@@ -282,9 +282,9 @@ capture a default before the config read finishes.
 - Check `MacroDeckStrings` before adding a key - `Common.*`, `Validation.*`, `Connection.*`,
   `Settings.*` are already translated everywhere Macro Deck ships. A duplicated `Save` is one more string
   every translator keeps in sync for text the reader already sees. Compose instead:
-  `MacroDeckStrings.Validation.Required(Strings.Actions.LogMessage.Message.Label())`.
+  `MacroDeckStrings.Validation.Required(Strings.Actions.RefreshUsage.Name())`.
 - **Keys are dotted, not underscored.** A dotted key becomes a nested class, so
-  `Actions.LogMessage.Message.Label` is `Strings.Actions.LogMessage.Message.Label()`. Name a key after
+  `Actions.RefreshUsage.Failure` is `Strings.Actions.RefreshUsage.Failure()`. Name a key after
   where it is used, not after the English wording. A key that is also a group other keys nest under is
   MDLOC008.
 - Placeholders are named (`{host}`) and become method parameters, so a missing one is a compile error.

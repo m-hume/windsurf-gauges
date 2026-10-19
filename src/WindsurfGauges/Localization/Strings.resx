@@ -25,6 +25,45 @@
   <data name="Actions.RefreshUsage.Failure" xml:space="preserve">
     <value>Could not reach Windsurf. Sign in to the Windsurf IDE, the Windsurf JetBrains plugin or Devin Desktop on this machine.</value>
   </data>
+  <data name="Actions.ShowUsage.Name" xml:space="preserve">
+    <value>Show Windsurf usage</value>
+  </data>
+  <data name="Actions.ShowUsage.Description" xml:space="preserve">
+    <value>Refreshes the usage figures and opens the full Windsurf usage view on the client that ran the action.</value>
+  </data>
+  <data name="Actions.ShowUsage.Unavailable" xml:space="preserve">
+    <value>The usage view could not be opened on this client.</value>
+  </data>
+  <data name="Dialog.Usage.Title" xml:space="preserve">
+    <value>Windsurf usage</value>
+  </data>
+  <data name="Dialog.Usage.Daily" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="Dialog.Usage.Weekly" xml:space="preserve">
+    <value>Weekly</value>
+  </data>
+  <data name="Dialog.Usage.Plan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="Dialog.Usage.PlanReset" xml:space="preserve">
+    <value>Plan reset</value>
+  </data>
+  <data name="Dialog.Usage.ExtraBalance" xml:space="preserve">
+    <value>Extra balance</value>
+  </data>
+  <data name="Dialog.Usage.DailyReset" xml:space="preserve">
+    <value>Daily reset</value>
+  </data>
+  <data name="Dialog.Usage.WeeklyReset" xml:space="preserve">
+    <value>Weekly reset</value>
+  </data>
+  <data name="Dialog.Usage.Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="Dialog.Usage.Updated" xml:space="preserve">
+    <value>Updated</value>
+  </data>
   <data name="Variables.DailyUsed.DisplayName" xml:space="preserve">
     <value>Windsurf daily quota used</value>
   </data>

@@ -35,8 +35,11 @@ src/WindsurfGauges/
   WindsurfGaugeWidget.cs        the widget view tree, the widget data schema and default data
   GaugeSession.cs               the live widget session (poll timer, picker sample)
   GaugeConfigSession.cs         the widget configuration editor
+  UsageDetailView.cs            the usage splash: two large arc gauges plus the account figures
+  UsageDetailSession.cs         the dialog session behind the splash (exclusive, 5s refresh)
   PluginConfigFlow.cs           the poll-interval settings flow
-  RefreshUsageAction.cs         the refresh action (also the widget's default short press)
+  RefreshUsageAction.cs         the refresh action
+  ShowUsageAction.cs            refresh + open the splash modal; the widget's default short press
   ThresholdDefaults.cs          the built-in's default colour bands, ported
   GaugeWidgetPreviews.cs        [UiPreview] scenarios behind the store images
   Localization/Strings.resx     default-culture strings; Strings.<tag>.resx per language
@@ -89,6 +92,13 @@ rather than this plugin's own code, look there rather than guessing.
   three times smaller than promised.
 - **The picker sample** (`sample: true` preview surface) renders representative gauges with capped
   text sizes (`SampleValueSize`/`SampleLabelSize`) and threshold colours, never the empty hint.
+- **Dialogs come from the plugin's own `IUiProvider`.** `ShowUsageAction` opens the splash with
+  `context.Ui.ShowModalAsync(context.OriginClientId, new ModalDefinition { ViewId = ... })`; the host
+  then opens a `dialog` surface whose `viewId` attribute selects the session. `context.Ui` is null on
+  headless runs and `OriginClientId` can be empty - both mean refresh only, not a failure.
+- **A grid in a stack child without `Fill`/`MainSize` makes its rows as tall as a column is wide.**
+  That is why the dialog's info block is a vertical stack of horizontal rows, not a 2-column grid:
+  with open height a grid sizes square cells, and the rows spread across the whole dialog.
 - **Preset names and `ConfigFlowResult.Complete` names become stored, user-editable data**: plain
   default-language strings, not localized values - `LocalizedText.ToString()` yields the raw
   `plugin:...:Key` token for catalog-backed text.

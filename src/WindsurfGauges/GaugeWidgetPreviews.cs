@@ -46,6 +46,21 @@ internal static class GaugeWidgetPreviews
 	public static UiElement Empty() => WindsurfGaugeWidget.Build(
 		new WindsurfGaugesData(), null, [], null);
 
+	[UiPreview("Usage detail dialog", Profile = UiPreviewProfiles.Config)]
+	public static UiElement DetailDialog() => UsageDetailView.Build(
+		new UiState<GaugeFace>(new GaugeFace { Level = 0.26, Value = "26", Color = ThresholdDefaults.Green }),
+		new UiState<GaugeFace>(new GaugeFace { Level = 0.78, Value = "78", Color = ThresholdDefaults.Orange }),
+		new UiState<UsageDetailText>(new UsageDetailText
+		{
+			Plan = "Pro",
+			PlanReset = "2026-10-31 00:00 · 13d",
+			ExtraBalance = "$23.13",
+			DailyReset = "2026-10-18 04:00",
+			WeeklyReset = "2026-10-23 04:00",
+			Account = "user@example.com",
+			Updated = "2026-10-18 14:32"
+		}));
+
 	[UiPreview("Warning colour", Profile = UiPreviewProfiles.Widget)]
 	public static UiElement Warning() => WindsurfGaugeWidget.Build(
 		new WindsurfGaugesData

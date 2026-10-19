@@ -161,6 +161,28 @@ public sealed class GaugeViewTests
 
 		Assert.That(view.Tree, Is.Not.Null);
 	}
+
+	[Test]
+	public void The_usage_detail_view_builds_without_throwing()
+	{
+		var surface = new MacroDeck.Ui.Model.Surfaces.UiSurface
+		{
+			Kind = MacroDeck.Ui.Model.Surfaces.UiSurfaceKinds.Dialog,
+			SessionMode = MacroDeck.Ui.Model.Surfaces.UiSessionModes.Exclusive
+		};
+
+		var daily = new MacroDeck.Ui.Runtime.UiState<WindsurfGauges.GaugeFace>(
+			new WindsurfGauges.GaugeFace { Level = 0.26, Value = "26", Color = "#34c759" });
+		var weekly = new MacroDeck.Ui.Runtime.UiState<WindsurfGauges.GaugeFace>(
+			new WindsurfGauges.GaugeFace { Level = 0.78, Value = "78", Color = "#ff9500" });
+		var text = new MacroDeck.Ui.Runtime.UiState<WindsurfGauges.UsageDetailText>(
+			new WindsurfGauges.UsageDetailText { Plan = "Pro", Account = "user@example.com" });
+
+		var view = new MacroDeck.Ui.Runtime.UiView(
+			surface, WindsurfGauges.UsageDetailView.Build(daily, weekly, text));
+
+		Assert.That(view.Tree, Is.Not.Null);
+	}
 }
 
 /// <summary>

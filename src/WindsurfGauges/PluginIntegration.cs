@@ -32,7 +32,7 @@ public sealed class PluginIntegration : IPluginIntegration, IVariableProvider, I
 		_variables = new WindsurfVariableProvider(_usage);
 	}
 
-	public IReadOnlyList<IActionDefinition> Actions => [new RefreshUsageAction(_usage)];
+	public IReadOnlyList<IActionDefinition> Actions => [new RefreshUsageAction(_usage), new ShowUsageAction(_usage)];
 
 	public IReadOnlyList<VariableDefinition> Variables => _variables.Variables;
 
@@ -53,20 +53,33 @@ public sealed class PluginIntegration : IPluginIntegration, IVariableProvider, I
 		new Dictionary<string, string>())
 	{
 		SupportsFlows = true,
-		DefaultShortPressAction = new WidgetDefaultAction("refresh-usage", new Dictionary<string, string>())
+		DefaultShortPressAction = new WidgetDefaultAction("show-usage", new Dictionary<string, string>())
 	};
 
 	public IReadOnlyList<UiSurfaceDeclaration> Surfaces =>
 	[
 		new UiSurfaceDeclaration { Kind = UiSurfaceKinds.Widget, SessionMode = UiSessionModes.Shared },
 		new UiSurfaceDeclaration { Kind = UiSurfaceKinds.Preview, SessionMode = UiSessionModes.Shared },
-		new UiSurfaceDeclaration { Kind = UiSurfaceKinds.Config, SessionMode = UiSessionModes.Exclusive }
+		new UiSurfaceDeclaration { Kind = UiSurfaceKinds.Config, SessionMode = UiSessionModes.Exclusive },
+		new UiSurfaceDeclaration { Kind = UiSurfaceKinds.Dialog, SessionMode = UiSessionModes.Exclusive }
 	];
 
 	public Task<IUiSession?> CreateSessionAsync(UiSessionRequest request, CancellationToken cancellationToken)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 		var surface = request.Surface;
+
+		if (surface.Kind == UiSurfaceKinds.Dialog)
+		{
+			var viewId = surface.Attributes.TryGetValue(UiDialogSurfaceAttributes.ViewId, out var view) &&
+				view.ValueKind == JsonValueKind.String
+					? view.GetString()
+					: null;
+			if (viewId != UsageDetailSession.ViewId || _resolver is null)
+				return Task.FromResult<IUiSession?>(null);
+			return Task.FromResult<IUiSession?>(
+				new UsageDetailSession(surface, _usage, _resolver, _logger));
+		}
 
 		if (surface.Kind == UiSurfaceKinds.Config)
 		{

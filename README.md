@@ -20,7 +20,9 @@ draws the value and a label inside the ring, with a title that supports variable
 | `windsurf_email` | Text | The signed-in account's email address |
 
 Actions: `refresh-usage` polls Windsurf immediately instead of waiting for the next scheduled
-refresh. It is also the widget's default short-press action. The poll interval is configurable in
+refresh. `show-usage` refreshes and opens the usage splash - a dialog with large daily and weekly
+gauges and every account figure - on the client that ran it; it is the widget's default short-press
+action, so tapping the tile shows the overview. The poll interval is configurable in
 the plugin's settings (30 to 3600 seconds, default 300); completing that one-step settings flow is
 what enables the integration.
 
